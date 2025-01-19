@@ -60,13 +60,13 @@ export function DataTable<TData, TValue>({
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
-                    <Link href={`/dashboard/${row.original.id}`}>
+                    <Link href={`/dashboard/${(row.original as { id: string }).id}`}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
                     </Link> 
-                    
+
                   </TableCell>
                 ))}
               </TableRow>
