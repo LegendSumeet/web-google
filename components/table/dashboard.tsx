@@ -1,52 +1,130 @@
-import { useState, useEffect } from "react"
-import { columns, ScrapedData } from "./columns"
-import { DataTable } from "./data-table"
+import { useState, useEffect } from "react";
+import { DataTable } from "./data-table"; 
+import { columns } from "./columns";
+import Cookies from "js-cookie";
 
-// Fetch data function to return ScrapedData structure
-async function getData(): Promise<ScrapedData[]> {
-  // Replace this with your actual API call
-  return [
-    {
-      id: "728ed52f",
-      title: "Example Page 1",
-      url: "https://example.com/1",
-      description: "This is an example description for page 1.",
-      keywords: "example, page, test",
-      scrapedAt: new Date().toISOString(),  // Timestamp when scraped
-    },
-    {
-      id: "728ed52g",
-      title: "Example Page 2",
-      url: "https://example.com/2",
-      description: "This is an example description for page 2.",
-      keywords: "example, page, another",
-      scrapedAt: new Date().toISOString(),  // Timestamp when scraped
-    },
-    // More data...
-  ]
+
+export type ScrapedData = {
+  id: string;
+  status: string;
+  userId: string;
+  createdAt: string;
+};
+
+interface ApiResponse {
+  message: string;
+  data: {
+    id: number;
+    status: string;
+    userId: number;
+    createdBy: string | null;
+    updatedBy: string | null;
+    createdAt: string;
+    updatedAt: string;
+  }[];
+  total: number;
+  limit: number;
+  offset: number;
 }
 
+
+
+async function getData(): Promise<ScrapedData[]> {
+  const token = Cookies.get("token");
+  if (!token) {
+    throw new Error("Authorization token is missing");
+  }
+
+  const response = await fetch("http://34.123.92.197/api/searchTask/getAll", {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data: ApiResponse = await response.json();
+
+  if(response.status !== 200) {
+    throw new Error(data.message);
+  }
+
+  return data.data.map((item) => ({
+    id: String(item.id),       
+    status: item.status,       
+    userId: String(item.userId),
+    createdAt: item.createdAt,  
+  }));
+}
+
+const LoadingSkeleton = ({ rows = 5, height = 40 }: { rows?: number; height?: number }) => {
+  return (
+    <div className="space-y-2">
+      {Array.from({ length: rows }, (_, index) => (
+        <div
+          key={index}
+          className="bg-gray-200 animate-pulse rounded"
+          style={{ height: `${height}px`, width: "100%" }}
+        ></div>
+      ))}
+    </div>
+  );
+};
+
 export function DemoPage() {
-  const [data, setData] = useState<ScrapedData[]>([])  // State to store data
-  const [loading, setLoading] = useState(true)        // State for loading status
+  const [data, setData] = useState<ScrapedData[]>([]);
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getData()
-      setData(data)  // Set the fetched data
-      setLoading(false)  // Set loading to false after fetching
-    }
+      try {
+        setLoading(true);
+        const fetchedData = await getData();
+        setData(fetchedData);
+      } catch (err) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unexpected error occurred.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    fetchData()
-  }, [])  // Empty dependency array ensures this effect runs once on mount
+    fetchData();
+  }, []);
+
 
   if (loading) {
-    return <div>Loading...</div>  // Show a loading state while fetching
+    return (
+      <div className="container mx-auto py-10">
+        <h1 className="text-xl font-semibold mb-4">Loading Data...</h1>
+        <LoadingSkeleton rows={5} height={40} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto py-10">
+        <h1 className="text-xl font-semibold text-red-500">Error:</h1>
+        <p>{error}</p>
+      </div>
+    );
   }
 
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} />
+      <DataTable
+        columns={columns}
+        data={data.map((item) => ({
+          id: item.id,
+          status: item.status,
+          userId: item.userId,
+          createdAt: new Date(item.createdAt).toLocaleString(),
+        }))}
+      />
     </div>
-  )
+  );
 }

@@ -2,38 +2,71 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 
-// Define the structure for the scraped data
 export type ScrapedData = {
   id: string
-  title: string
-  url: string
-  description: string
-  keywords: string
-  scrapedAt: string // Timestamp when the data was scraped
+  keyword: string
+  searchTaskId: string
+  userId: string
+  addsCount: number
+  linksCount: number
+  html: string
+  createdAt: string
 }
 
 export const columns: ColumnDef<ScrapedData>[] = [
   {
-    accessorKey: "title", // Column for the scraped page title
-    header: "Title",
-    cell: (info) => info.getValue(), // Rendering the title
+    accessorKey: "id", 
+    header: "Keyword Id",
+    cell: (info) => info.getValue(), 
   },
   {
-    accessorKey: "url", // Column for the scraped URL
-    header: "URL",
+    accessorKey: "keyword", 
+    header: "Keyword",
   },
   {
-    accessorKey: "description", // Column for the scraped page description
-    header: "Description",
-    cell: (info) => info.getValue(), // Rendering the description
+    accessorKey: "searchTaskId", 
+    header: "Search Task Id",
+    cell: (info) => info.getValue(), 
   },
   {
-    accessorKey: "keywords", // Column for the scraped keywords
-    header: "Keywords",
-    cell: (info) => info.getValue(), // Rendering the keywords
+    accessorKey: "userId",
+    header: "User Id",
+    cell: (info) => info.getValue(), 
   },
   {
-    accessorKey: "scrapedAt", // Timestamp when the data was scraped
-    header: "Scraped At",
+    accessorKey: "addsCount",
+    header: "Adds Count",
   },
+  {
+    accessorKey: "linksCount", 
+    header: "Links Count",
+  },
+  {
+    accessorKey: "html", 
+    header: "HTML",
+    cell: (info) => {
+      const htmlContent = info.getValue() || "<p><strong>Welcome to the HTML view!</strong> This is some demo content.</p>";
+      return (
+        <div
+          dangerouslySetInnerHTML={{ __html: htmlContent }} 
+        />
+      );
+    },
+  },
+  {
+    accessorKey: "createdAt", 
+    header: "Created At",
+    cell: (info) => info.getValue(), 
+  }
 ]
+
+
+
+// keyword id
+// keyword
+// search task id
+// user id
+// addscount
+// links count
+// html
+// createdat

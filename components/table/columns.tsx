@@ -2,38 +2,33 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 
-// Define the structure for the scraped data
 export type ScrapedData = {
   id: string
-  title: string
-  url: string
-  description: string
-  keywords: string
-  scrapedAt: string // Timestamp when the data was scraped
+  status: string
+  userId: string
+  createdAt: string
 }
 
 export const columns: ColumnDef<ScrapedData>[] = [
   {
-    accessorKey: "title", // Column for the scraped page title
-    header: "Title",
-    cell: (info) => info.getValue(), // Rendering the title
+    accessorKey: "id", 
+    header: "Task Id",
+    cell: (info) => info.getValue(),
   },
   {
-    accessorKey: "url", // Column for the scraped URL
-    header: "URL",
+    accessorKey: "status",
+    header: "Status",
   },
   {
-    accessorKey: "description", // Column for the scraped page description
-    header: "Description",
-    cell: (info) => info.getValue(), // Rendering the description
+    accessorKey: "userId", 
+    header: "User Id",
+    cell: (info) => info.getValue(),
   },
   {
-    accessorKey: "keywords", // Column for the scraped keywords
-    header: "Keywords",
-    cell: (info) => info.getValue(), // Rendering the keywords
-  },
-  {
-    accessorKey: "scrapedAt", // Timestamp when the data was scraped
-    header: "Scraped At",
-  },
+    accessorKey: "createdAt", 
+    header: "Created At",
+    cell: (info) => info.getValue(),
+  }
 ]
+
+// taksid status user-id createddate 

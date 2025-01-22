@@ -9,7 +9,6 @@ import { useParams } from "next/navigation";
 import { useState } from "react"
 
 
-// Define the types for the dialog props
 interface FileUploadDialogProps {
     isOpen: boolean;
     onClose: () => void;
@@ -50,9 +49,7 @@ export default function Dashboard() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [csvFile, setCsvFile] = useState<File | null>(null)
 
-    const handleOpenDialog = () => {
-        setIsDialogOpen(true)
-    }
+
 
     const handleCloseDialog = () => {
         setIsDialogOpen(false)
@@ -85,7 +82,6 @@ export default function Dashboard() {
             <SidebarInset >
                 <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
                     <SidebarTrigger className="-ml-1" />
-                    <Button onClick={handleOpenDialog}>Upload CSV</Button>
                 </header>
                 <div className="flex flex-1 flex-col gap-4 p-4">
                     <DetailsPage id={id} />

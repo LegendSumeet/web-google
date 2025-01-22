@@ -5,15 +5,18 @@ import { DemoPage } from "@/components/table/dashboard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { useState } from "react"
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
-
-// Define the types for the dialog props
 interface FileUploadDialogProps {
     isOpen: boolean;
     onClose: () => void;
     onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onFileUpload: () => void;
+    isUploading: boolean;
+    uploadError: string | null;
+    isUploadSuccess: boolean;
 }
 
 function FileUploadDialog({
@@ -21,6 +24,9 @@ function FileUploadDialog({
     onClose,
     onFileChange,
     onFileUpload,
+    isUploading,
+    uploadError,
+    isUploadSuccess,
 }: FileUploadDialogProps) {
     return (
         isOpen && (
@@ -37,64 +43,116 @@ function FileUploadDialog({
                         <Button onClick={onClose}>Cancel</Button>
                         <Button onClick={onFileUpload}>Upload</Button>
                     </div>
+                    {isUploading && <div className="mt-4 text-center">Uploading...</div>}
+                    {isUploadSuccess && <div className="mt-4 text-center text-green-500">File uploaded successfully!</div>}
+                    {uploadError && <div className="mt-4 text-center text-red-500">{uploadError}</div>}
                 </div>
             </div>
         )
-    )
+    );
 }
 
 export default function Dashboard() {
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [csvFile, setCsvFile] = useState<File | null>(null)
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [csvFile, setCsvFile] = useState<File | null>(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [uploadError, setUploadError] = useState<string | null>(null);
+    
+    const [isUploadSuccess, setIsUploadSuccess] = useState(false);
+    const [uploadSuccessTriggered, setUploadSuccessTriggered] = useState(false); 
+
+    const router = useRouter();
+
+    useEffect(() => {
+        const token = Cookies.get("token");
+        if (!token) {
+            router.push("/");
+        }
+    }, [router]);
 
     const handleOpenDialog = () => {
-        setIsDialogOpen(true)
-    }
+        setIsUploadSuccess(false);
+       setUploadSuccessTriggered(false);
+        setIsDialogOpen(true);
+    };
 
     const handleCloseDialog = () => {
-        setIsDialogOpen(false)
-    }
+        setIsDialogOpen(false);
+    };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] ?? null
+        const file = e.target.files?.[0] ?? null;
         if (file && file.type === "text/csv") {
-            setCsvFile(file)
+            setCsvFile(file);
         } else {
-            alert("Please select a valid CSV file")
+            alert("Please select a valid CSV file");
         }
-    }
+    };
 
-    const handleFileUpload = () => {
+    const handleFileUpload = async () => {
         if (csvFile) {
-            // Handle file processing here (e.g., parse CSV, upload to server)
-            alert("CSV file selected: " + csvFile.name)
-            handleCloseDialog()  // Close the dialog after uploading
+            const formData = new FormData();
+            formData.append("file", csvFile);
+
+            setIsUploading(true);
+            setUploadError(null);
+            setIsUploadSuccess(false);
+
+            try {
+                const token = Cookies.get("token");
+
+                const response = await fetch("http://34.123.92.197/api/searchTask/create", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (response.status === 201) {
+                    console.log("File uploaded successfully");
+                    setIsUploadSuccess(true);
+                    setUploadSuccessTriggered(true);
+                } else {
+                    const errorData = await response.json();
+                    setUploadError(errorData.message || "Error uploading file");
+                }
+            } catch (error) {
+                console.error("Error during file upload:", error);
+                setUploadError("There was an error during the file upload.");
+                setUploadSuccessTriggered(false); 
+            } finally {
+                setIsUploading(false);
+                handleCloseDialog(); 
+            }
         } else {
-            alert("No file selected.")
+            alert("No file selected.");
         }
-    }
+    };
 
     return (
         <SidebarProvider className="bg-black">
-            {/* Conditionally render AppSidebar based on isDialogOpen */}
-            {!isDialogOpen && <AppSidebar className="bg-black "/>}
+            {!isDialogOpen && <AppSidebar className="bg-black" />}
             
-            <SidebarInset >
+            <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
                     <SidebarTrigger className="-ml-1" />
                     <Button onClick={handleOpenDialog}>Upload CSV</Button>
                 </header>
                 <div className="flex flex-1 flex-col gap-4 p-4">
-                    <DemoPage />
+                    <DemoPage key={uploadSuccessTriggered ? "success" : "default"} />
                 </div>
             </SidebarInset>
-        
+
             <FileUploadDialog
                 isOpen={isDialogOpen}
                 onClose={handleCloseDialog}
                 onFileChange={handleFileChange}
                 onFileUpload={handleFileUpload}
+                isUploading={isUploading}
+                uploadError={uploadError}
+                isUploadSuccess={isUploadSuccess}
             />
         </SidebarProvider>
-    )
+    );
 }
