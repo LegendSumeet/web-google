@@ -20,7 +20,7 @@ type ApiResponse = {
 
 async function getData(id: string): Promise<ScrapedData[]> {
   const token = Cookies.get("token");
-  const response = await fetch(`http://34.123.92.197/api/keywords/searchTask/${id}`, {
+  const response = await fetch(`https://myclan.co.in/api/keywords/searchTask/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

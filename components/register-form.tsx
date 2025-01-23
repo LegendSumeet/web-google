@@ -37,7 +37,7 @@ export function SignUpForm({
     setError("");
 
     try {
-      const response = await fetch(`http://34.123.92.197/api/user/register`, {
+      const response = await fetch(`https://myclan.co.in/api/user/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

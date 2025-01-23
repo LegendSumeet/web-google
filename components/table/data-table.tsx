@@ -4,6 +4,8 @@ import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
+
   useReactTable,
 } from "@tanstack/react-table";
 import {
@@ -29,16 +31,21 @@ export function DataTable<TData, TValue>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+
   });
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border bg-white shadow-sm">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow key={headerGroup.id} className="bg-gray-100">
               {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
+                <TableHead
+                  key={header.id}
+                  className="text-lg font-bold text-gray-600 px-4 py-2"
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -51,35 +58,44 @@ export function DataTable<TData, TValue>({
           ))}
         </TableHeader>
 
+        {/* Table Body */}
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                className="hover:bg-gray-50"
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    <Link href={`/dashboard/${(row.original as { id: string }).id}`}>
+                  <TableCell key={cell.id} className="px-4 py-2 ">
+                    <Link
+                      href={`/dashboard/${(row.original as { id: string }).id}`}
+                      className=""
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
-                    </Link> 
-
+                    </Link>
                   </TableCell>
                 ))}
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
+              <TableCell
+                colSpan={columns.length}
+                className="h-24 text-center "
+              >
+                No results found.
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
+
     </div>
   );
+
 }

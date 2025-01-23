@@ -1,6 +1,5 @@
-"use client"
-
 import { ColumnDef } from "@tanstack/react-table"
+import { DialogDemo } from "../dialog"
 
 export type ScrapedData = {
   id: string
@@ -45,12 +44,9 @@ export const columns: ColumnDef<ScrapedData>[] = [
     accessorKey: "html", 
     header: "HTML",
     cell: (info) => {
-      const htmlContent = info.getValue() || "<p><strong>Welcome to the HTML view!</strong> This is some demo content.</p>";
-      return (
-        <div
-          dangerouslySetInnerHTML={{ __html: htmlContent }} 
-        />
-      );
+      // Get the HTML content as a string
+      const htmlContent = info.getValue<string>();  // Explicitly asserting the type to string
+      return <DialogDemo htmlContent={htmlContent} />;  // Pass the htmlContent to the DialogDemo component
     },
   },
   {
@@ -59,14 +55,3 @@ export const columns: ColumnDef<ScrapedData>[] = [
     cell: (info) => info.getValue(), 
   }
 ]
-
-
-
-// keyword id
-// keyword
-// search task id
-// user id
-// addscount
-// links count
-// html
-// createdat

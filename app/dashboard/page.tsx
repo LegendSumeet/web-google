@@ -8,6 +8,9 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/s
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import { saveAs } from 'file-saver';
+import { FaFileCsv } from 'react-icons/fa'; // Importing CSV file icon from React Icons
+
 
 interface FileUploadDialogProps {
     isOpen: boolean;
@@ -19,6 +22,8 @@ interface FileUploadDialogProps {
     isUploadSuccess: boolean;
 }
 
+
+
 function FileUploadDialog({
     isOpen,
     onClose,
@@ -28,29 +33,53 @@ function FileUploadDialog({
     uploadError,
     isUploadSuccess,
 }: FileUploadDialogProps) {
+    const downloadCsvTemplate = () => {
+        const csvContent = 'Keyword\nflutter\njava\niphones\n';
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        saveAs(blob, 'template.csv');
+    };
+
     return (
         isOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
                 <div className="bg-white p-8 rounded-lg w-96">
                     <h2 className="text-xl font-semibold">Upload CSV</h2>
-                    <Input
-                        type="file"
-                        accept=".csv"
-                        onChange={onFileChange}
-                        className="my-4"
-                    />
+                    <div className="flex items-center gap-2 my-4">
+                    <Button
+                            variant="outline"
+                            onClick={downloadCsvTemplate}
+                            className="px-2 py-1 rounded text-sm flex items-center gap-1 border border-gray-300"
+                        >
+                            <FaFileCsv className="text-black" />
+                            Template
+                        </Button>
+                        <Input
+                            type="file"
+                            accept=".csv"
+                            onChange={onFileChange}
+                            className="flex-1"
+                        />
+                       
+                    </div>
                     <div className="flex justify-end gap-4">
                         <Button onClick={onClose}>Cancel</Button>
                         <Button onClick={onFileUpload}>Upload</Button>
                     </div>
                     {isUploading && <div className="mt-4 text-center">Uploading...</div>}
-                    {isUploadSuccess && <div className="mt-4 text-center text-green-500">File uploaded successfully!</div>}
-                    {uploadError && <div className="mt-4 text-center text-red-500">{uploadError}</div>}
+                    {isUploadSuccess && (
+                        <div className="mt-4 text-center text-green-500">
+                            File uploaded successfully!
+                        </div>
+                    )}
+                    {uploadError && (
+                        <div className="mt-4 text-center text-red-500">{uploadError}</div>
+                    )}
                 </div>
             </div>
         )
     );
 }
+
 
 export default function Dashboard() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -101,7 +130,7 @@ export default function Dashboard() {
             try {
                 const token = Cookies.get("token");
 
-                const response = await fetch("http://34.123.92.197/api/searchTask/create", {
+                const response = await fetch("https://myclan.co.in/api/searchTask/create", {
                     method: "POST",
                     body: formData,
                     headers: {
@@ -137,7 +166,7 @@ export default function Dashboard() {
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
                     <SidebarTrigger className="-ml-1" />
-                    <Button onClick={handleOpenDialog}>Upload CSV</Button>
+                    <Button onClick={handleOpenDialog}>Upload CSV to Start Scraping</Button>
                 </header>
                 <div className="flex flex-1 flex-col gap-4 p-4">
                     <DemoPage key={uploadSuccessTriggered ? "success" : "default"} />

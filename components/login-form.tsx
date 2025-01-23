@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 import Cookies from 'js-cookie';
 
 interface ApiResponse {
@@ -46,7 +46,7 @@ export function LoginForm({
     setError("");
 
     try {
-      const response = await fetch("http://34.123.92.197/api/user/login", {
+      const response = await fetch("https://myclan.co.in/api/user/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,19 +57,23 @@ export function LoginForm({
       const data: ApiResponse = await response.json();
 
 
-      console.log("Login response:", data);
+      if (response.status == 200) {
+        console.log("Login response:", data);
 
 
-      console.log("Login response:", data);
-      Cookies.set("userId", String(data.user?.id), { expires: 7 });
-      Cookies.set("userName", data.user?.name || "", { expires: 7 });
-      Cookies.set("userEmail", data.user?.email || "", { expires: 7 });
-      Cookies.set("token", data.token || "", { expires: 7 });
-      Cookies.set("refreshToken", data.refreshToken || "", { expires: 7 });
+        console.log("Login response:", data);
+        Cookies.set("userId", String(data.user?.id), { expires: 7 });
+        Cookies.set("userName", data.user?.name || "", { expires: 7 });
+        Cookies.set("userEmail", data.user?.email || "", { expires: 7 });
+        Cookies.set("token", data.token || "", { expires: 7 });
+        Cookies.set("refreshToken", data.refreshToken || "", { expires: 7 });
 
-      console.log("Login successful:", data.user);
+        console.log("Login successful:", data.user);
 
-      router.push("/dashboard");
+        router.push("/dashboard");
+      } else {
+        setError(data.message || "An unknown error occurred.");
+      }
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
