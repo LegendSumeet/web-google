@@ -34,7 +34,7 @@ async function getData(offset: number, limit: number): Promise<{ data: ScrapedDa
   }
 
   const response = await fetch(
-    `https://myclan.co.in/api/searchTask/getAll?limit=${limit}&offset=${offset}`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/searchTask/getAll?limit=${limit}&offset=${offset}`,
     {
       headers: {
         "Content-Type": "application/json",

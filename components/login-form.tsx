@@ -46,7 +46,7 @@ export function LoginForm({
     setError("");
 
     try {
-      const response = await fetch("https://myclan.co.in/api/user/login", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

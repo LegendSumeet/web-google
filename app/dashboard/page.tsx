@@ -130,7 +130,7 @@ export default function Dashboard() {
             try {
                 const token = Cookies.get("token");
 
-                const response = await fetch("https://myclan.co.in/api/searchTask/create", {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/searchTask/create`, {
                     method: "POST",
                     body: formData,
                     headers: {

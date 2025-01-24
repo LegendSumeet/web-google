@@ -37,7 +37,7 @@ export function SignUpForm({
     setError("");
 
     try {
-      const response = await fetch(`https://myclan.co.in/api/user/register`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/user/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,0 +1,6 @@
+# Environment settings
+NODE_ENV=development
+
+# API base URLs (replace with actual URLs as needed)
+NEXT_PUBLIC_API_BASE_URL=Backend_URl
+
