@@ -45,7 +45,7 @@ export const columns: ColumnDef<ScrapedData>[] = [
     header: "HTML",
     cell: ({ row }) => {
     
-      const id = row.original.id as String;
+      const id = row.original.id as string;
       return <DialogDemo id={id} />;
     },
   },
