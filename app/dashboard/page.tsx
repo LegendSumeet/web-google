@@ -34,7 +34,7 @@ function FileUploadDialog({
     isUploadSuccess,
 }: FileUploadDialogProps) {
     const downloadCsvTemplate = () => {
-        const csvContent = 'Keyword\nflutter\njava\niphones\n';
+        const csvContent = 'Keywords\nflutter\njava\niphones\n';
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         saveAs(blob, 'template.csv');
     };
