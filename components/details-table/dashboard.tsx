@@ -46,7 +46,7 @@ async function getData(id: string): Promise<ScrapedData[]> {
     userId: String(item.userId),
     addsCount: item.adsCount || 0,
     linksCount: item.linksCount || 0,
-    html: item.html || "",
+    html: String(item.id),
     createdAt: item.createdAt,
   }));
 }
@@ -59,6 +59,7 @@ export function DetailsPage({ id }: { id: string }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log('DetailsPage id',id);
         const data = await getData(id);
         setData(data);
       } catch (err) {
