@@ -100,7 +100,34 @@ export function DemoPage() {
   useEffect(() => {
     fetchData(offset);
   }, [offset]);
+  // useEffect(() => {
+  //     // Connect to the SSE endpoint
+  //     const eventSource = new EventSource('http://localhost:3000/events');
 
+  //     eventSource.onmessage = (event) => {
+  //         const newEvent = JSON.parse(event.data);
+  //         setData((prevData) => {
+  //             // Check if the new event already exists in the data
+  //             const exists = prevData.some((item) => item.id === newEvent.id);
+  //             if (exists) {
+  //                 return prevData.map((item) =>
+  //                     item.id === newEvent.id ? { ...item, ...newEvent } : item
+  //                 );
+  //             }
+  //             // If not, add the new event
+  //             return [...prevData, newEvent];
+  //         });
+  //     };
+
+  //     eventSource.onerror = (error) => {
+  //         console.error('EventSource failed:', error);
+  //         eventSource.close();
+  //     };
+
+  //     return () => {
+  //         eventSource.close(); // Cleanup connection on component unmount
+  //     };
+  // }, []);
   const handleNext = () => {
     if (offset + limit < total) {
       setOffset((prev) => prev + limit);
